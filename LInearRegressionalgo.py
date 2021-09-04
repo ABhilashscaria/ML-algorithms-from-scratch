@@ -7,8 +7,9 @@ from sklearn.preprocessing import StandardScaler
 
 scaler = StandardScaler()
 rng = np.random
-l, s = [], []
-df = pd.read_csv("https://raw.githubusercontent.com/umangkejriwal1122/Youtube/master/Salary_Data.csv")
+loss_total, step_total = [], []
+df = pd.read_csv("https://raw.githubusercontent.com/umangkejriwal1122/Youtube/master/Salary_Data.csv") #Read input
+#Preprocessing 
 x = df.iloc[:, 0].values
 y = df.iloc[:, 1].values
 x = x.reshape(-1, 1)  # -1 implies unknown numpy will figure it out
@@ -25,7 +26,7 @@ W = tf.Variable(rng.randn(), name="weight")
 b = tf.Variable(rng.randn(), name="bias")
 
 
-# Function
+# Linear regression function
 def linear_regression(x):
     return W * x + b
 
@@ -37,7 +38,7 @@ def mean_square(y_pred, y_true):
 
 optimizer = tf.optimizers.SGD(alpha)  # Stochastic Gradient Descent
 
-
+#Optimization using SGD
 def run_optimization():
     with tf.GradientTape() as g:
         pred = linear_regression(xtrain)
@@ -54,16 +55,18 @@ for step in range(1, epochs + 1):
     if step % display_step == 0:
         pred = linear_regression(xtrain)
         loss = mean_square(pred, ytrain)
-        l.append(loss)
-        s.append(step)
+        loss_total.append(loss)
+        step_total.append(step)
         print(f'step:{step},loss:{loss},W:{W.numpy()},b:{b.numpy()}')
 from sklearn.metrics import r2_score
-print(r2_score(W*xtest + b, ytest))
+print(r2_score(W*xtest + b, ytest)) #Regression score
+#Plotting original and fitted line
 plt.plot(x, y, 'ro', label="Original Data")
 plt.plot(x, np.array(W * x + b), label="Fitted Line")
 plt.legend()
 plt.show()
-plt.plot(s, l, )
+#Plotting Epochs vs loss
+plt.plot(step_total, loss_total, )
 plt.xlabel("Epochs")
 plt.ylabel("Loss")
 plt.show()
